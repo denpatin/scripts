@@ -2,7 +2,9 @@ REM Batch to start/stop iTunes with corresponding services^
 
 set ITUNES_SERVICES=("iPod Service" "Bonjour Service" "Apple Mobile Device Service")
 
-IF "%1" == "stop" (
+tasklist | find /I /N "iTunes.exe"
+
+IF "%ERRORLEVEL%"=="0" (
   taskkill /IM "iTunes.exe"
   FOR %%G IN %ITUNES_SERVICES% DO (
     sc stop %%G
