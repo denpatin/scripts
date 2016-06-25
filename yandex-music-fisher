@@ -1,0 +1,36 @@
+#!/bin/bash
+
+echo "=== Updating Yandex.Music fisher ==="
+echo "Checking prerequisites..."
+command -v node >/dev/null 2>&1 || {
+  echo >&2 "Node.js executable is not found.\nAborting!"
+  exit 1
+}
+if [ "$(node --version | cut -c2)" -ge 6 ]
+then
+  echo "* Node of version 6 or higher is installed ($(node --version))."
+fi
+command -v curl >/dev/null 2>&1 || {
+  echo >&2 "curl executable is not found.\nAborting!"
+  exit 1
+}
+echo "* Curl is installed."
+echo "Updating release..."
+echo "* Deleting old release..."
+rm -f master.zip
+rm -rf yandex-music-fisher*
+echo "* Downloading new zip file..."
+url=https://github.com/egoroof/yandex-music-fisher/archive
+curl -LOsk $url/master.zip >/dev/null
+echo "* Unzipping new release..."
+unzip master.zip >/dev/null
+cd yandex-music-fisher* || {
+  echo >&2 "Unzipping unsuccessfull.\nAborting!"
+  exit 1
+}
+echo "* Installing npm dependencies..."
+npm install >/dev/null 2>/dev/null
+echo "* Building new release..."
+npm run build >/dev/null
+release=$(cat package.json | grep version | head -1 | awk -F\" '{print $4}')
+echo "New Yandex.Music fisher v$release is successfully installed!"
